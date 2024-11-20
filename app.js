@@ -296,10 +296,20 @@ app.get('/api/transactions/:transaction_id/', authenticateToken, async(request, 
     try{
         const userCollection = client.db(process.env.DB_NAME).collection('users')
         const checkUserInDB = await userCollection.find({userId}).toArray()
+        const transactionsCollection = client.db(process.env.DB_NAME).collection('transactions')
+        const getTransaction = await transactionsCollection.find({transaction_id}).toArray()
 
-        if(checkUserInDB.length === 1){
-            const transactionsCollection = client.db(process.env.DB_NAME).collection('transactions') 
-            const checkTransaction = await transactionsCollection.find({transaction_id}).toArray()
+        if(checkUserInDB.length === 1 && userId === getTransaction[0].user){
+            const checkTransaction = await transactionsCollection.find({transaction_id},
+                {projection: {
+                    transaction_id: 1,
+                    amount: 1,
+                    transaction_type: 1,
+                    status: 1,
+                    timestamp: 1,
+                    _id: 0
+                }}
+            ).toArray()
 
             if(checkTransaction.length === 1){
                 response.status(201).send(checkTransaction)
@@ -307,6 +317,9 @@ app.get('/api/transactions/:transaction_id/', authenticateToken, async(request, 
             else{
                 response.status(401).send({message: "Invalid Transaction Details"})
             }
+        }
+        else{
+            response.status(401).send({message: "Invalid User Request"})
         }
     }
     catch(e){
