@@ -1,0 +1,48 @@
+API - 1 Create a new user 
+
+{
+    "username": "ravi",
+    "email": "ravi@gmail.com",
+    "password": "ravi@123"
+}
+
+
+API -2 User Login
+
+{
+    "username": "ravi",
+    "password": "ravi@123"
+}
+
+6b42890c-a97a-4840-ad28-b906fc96ab8c
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YjQyODkwYy1hOTdhLTQ4NDAtYWQyOC1iOTA2ZmM5NmFiOGMiLCJpYXQiOjE3MzIxMDkyMTZ9.S285E7Mcka4NqMkpz3mTxXcDe-1Bhprl3hbwsTKEp5Q
+
+
+API -3 New Transaction
+
+{   
+    "user": "6b42890c-a97a-4840-ad28-b906fc96ab8c",
+    "amount": 150.00,
+    "transactionType": "DEPOSIT"
+}
+
+{   
+    "user": "6b42890c-a97a-4840-ad28-b906fc96ab8c",
+    "amount": 100,
+    "transactionType": "WITHDRAWAL"
+}
+
+{
+    "user": "71d4c350-6479-49bd-9977-9634dec4a464",
+    "amount": 100,
+    "transactionType": "DEPOSIT"
+}
+
+API - 4 Update Transaction Status
+
+{   
+    "status": "COMPLETED"
+}
+
+71d4c350-6479-49bd-9977-9634dec4a464","jwtToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3MWQ0YzM1MC02NDc5LTQ5YmQtOTk3Ny05NjM0ZGVjNGE0NjQiLCJpYXQiOjE3MzIxMTc2MTR9.Pl_C8UhJcQ5oc-DkwM-HZ-xZmDuZnVcJ1qXRgGUDVHE
