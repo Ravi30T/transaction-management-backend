@@ -228,10 +228,10 @@ app.get('/api/transactions/', authenticateToken, async(request, response) => {
             }}).toArray()
 
         if(getUserTransactions.length > 0){
-            response.status(201).send({transactions: getUserTransactions, balance: checkUserInDB[0].accountBalance})
+            response.status(201).send({transactions: getUserTransactions})
         }
         else{
-            response.status(401).send({message: "No Transactions", balance: checkUserInDB[0].accountBalance})
+            response.status(401).send({message: "No Transactions"})
         }
     }
     else{
@@ -326,3 +326,34 @@ app.get('/api/transactions/:transaction_id/', authenticateToken, async(request, 
         response.status(500).send({message: "Internal Server Error"})
     }  
 })
+
+// API - 7 Get Profile Details
+
+app.get('/user/profile', authenticateToken, async (request, response) => {
+    const { userId } = request
+    console.log(userId)
+    try {
+        const userCollection = client.db(process.env.DB_NAME).collection('users')
+
+        const userDetails = await userCollection.find(
+            { userId },
+            {
+                projection: {
+                    userName: 1,
+                    email: 1,
+                    accountBalance: 1,
+                    userId: 1,
+                    _id: 0,
+                },
+            }
+        ).toArray();
+
+        if (userDetails.length > 0) {
+            response.status(200).send(userDetails)
+        } else {
+            response.status(401).send({ message: "Invalid User Request" })
+        }
+    } catch (e) {
+        response.status(500).send({ message: "Internal Server Error" })
+    }
+});
