@@ -123,7 +123,7 @@ app.post('/login', async(request, response) => {
     
             if(verifyPassword){
                 const token = jwt.sign({userId: checkUserInDB[0].userId}, 'MY_SECRET_TOKEN')
-                response.status(201).send({userId: checkUserInDB[0].userId, jwtToken: token})
+                response.status(201).send({userId: checkUserInDB[0].userId, jwtToken: token, username: username})
             }
             else{
                 response.status(401).send({message: "Incorrect Password"})
@@ -228,10 +228,10 @@ app.get('/api/transactions/', authenticateToken, async(request, response) => {
             }}).toArray()
 
         if(getUserTransactions.length > 0){
-            response.status(201).send(getUserTransactions)
+            response.status(201).send({transactions: getUserTransactions, balance: checkUserInDB[0].accountBalance})
         }
         else{
-            response.status(401).send({message: "No Transactions"})
+            response.status(401).send({message: "No Transactions", balance: checkUserInDB[0].accountBalance})
         }
     }
     else{
