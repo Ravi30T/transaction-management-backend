@@ -149,23 +149,24 @@ app.post('/api/transactions/', authenticateToken, async(request, response) => {
     const checkUserInDB = await userCollection.find({userId: user}).toArray()
 
     const transactionsCollection = client.db(process.env.DB_NAME).collection('transactions')
+    
+    const timestamp = new Date().toISOString();
+
+    const newTransaction = {
+        transaction_id: uuidv4(),
+        amount: parseFloat(amount),
+        transaction_type: transactionType,
+        status: "PENDING",
+        user: user,
+        timestamp: timestamp,
+    }
 
     try{
         if(checkUserInDB.length === 1 && userId === user){
             if(amount !== undefined && transactionType !== undefined){
-                const timestamp = new Date().toISOString();
-    
+                
                 if(transactionType === 'DEPOSIT'){
                     const updatedBalance = parseFloat(checkUserInDB[0].accountBalance) + parseFloat(amount)
-                    const newTransaction = {
-                        transaction_id: uuidv4(),
-                        amount: parseFloat(amount),
-                        transaction_type: transactionType,
-                        status: "PENDING",
-                        user: user,
-                        timestamp: timestamp,
-                    }
-    
                     await userCollection.updateOne({userId: user}, {$set: {accountBalance: parseFloat(updatedBalance)}})
                     await transactionsCollection.insertOne(newTransaction)
                     response.status(201).send({message: "Transaction Completed Successfully"})
@@ -175,33 +176,29 @@ app.post('/api/transactions/', authenticateToken, async(request, response) => {
     
                     if(amount < availableBalance){
                         const updatedBalance = availableBalance - parseFloat(amount)
-                        const newTransaction = {
-                            transaction_id: uuidv4(),
-                            amount: parseFloat(amount),
-                            transaction_type: transactionType,
-                            status: "PENDING",
-                            user: user,
-                            timestamp: timestamp,
-                        }
     
                         await userCollection.updateOne({userId: user}, {$set: {accountBalance: parseFloat(updatedBalance)}})
                         await transactionsCollection.insertOne(newTransaction)
                         response.status(201).send({message: "Transaction Completed Successfully"})
                     }
                     else{
+                        await transactionsCollection.insertOne(newTransaction)
                         response.status(401).send({message: "Insufficient Amount"})
                     }
                 }
             }
             else{
+                await transactionsCollection.insertOne(newTransaction)
                 response.status(401).send({message: "Please Provide Valid Transaction Details "})
             }
         }
         else{
+            await transactionsCollection.insertOne(newTransaction)
             response.status(401).send({message: "Invalid User Request"})
         }
     }
     catch(e){
+        await transactionsCollection.insertOne(newTransaction)
         response.status(500).send({message: "Internal Server Error"})
     }
 })
