@@ -169,7 +169,7 @@ app.post('/api/transactions/', authenticateToken, async(request, response) => {
                     const updatedBalance = parseFloat(checkUserInDB[0].accountBalance) + parseFloat(amount)
                     await userCollection.updateOne({userId: user}, {$set: {accountBalance: parseFloat(updatedBalance)}})
                     await transactionsCollection.insertOne(newTransaction)
-                    response.status(201).send({message: "Transaction Completed Successfully"})
+                    response.status(201).send({message: "Transaction Completed Successfully", transactionId: newTransaction.transaction_id})
                 }
                 else{
                     const availableBalance = parseFloat(checkUserInDB[0].accountBalance)
@@ -179,27 +179,27 @@ app.post('/api/transactions/', authenticateToken, async(request, response) => {
     
                         await userCollection.updateOne({userId: user}, {$set: {accountBalance: parseFloat(updatedBalance)}})
                         await transactionsCollection.insertOne(newTransaction)
-                        response.status(201).send({message: "Transaction Completed Successfully"})
+                        response.status(201).send({message: "Transaction Completed Successfully", transactionId: newTransaction.transaction_id})
                     }
                     else{
                         await transactionsCollection.insertOne(newTransaction)
-                        response.status(401).send({message: "Insufficient Amount"})
+                        response.status(400).send({message: "Insufficient Amount", transactionId: newTransaction.transaction_id})
                     }
                 }
             }
             else{
                 await transactionsCollection.insertOne(newTransaction)
-                response.status(401).send({message: "Please Provide Valid Transaction Details "})
+                response.status(400).send({message: "Please Provide Valid Transaction Details", transactionId: newTransaction.transaction_id})
             }
         }
         else{
             await transactionsCollection.insertOne(newTransaction)
-            response.status(401).send({message: "Invalid User Request"})
+            response.status(401).send({message: "Invalid User Request", transactionId: newTransaction.transaction_id})
         }
     }
     catch(e){
         await transactionsCollection.insertOne(newTransaction)
-        response.status(500).send({message: "Internal Server Error"})
+        response.status(500).send({message: "Internal Server Error", transactionId: newTransaction.transaction_id})
     }
 })
 
